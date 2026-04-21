@@ -1,13 +1,12 @@
 "use strict";
 
 /**
- * Points directly to the worker in your main folder.
- * This fixes the "looping" by making sure the file is actually found.
+ * Path to the internal curriculum worker.
  */
 const stockSW = "/sw.js"; 
 
 /**
- * Global utility used to register the worker.
+ * Registers the background secure connection.
  */
 async function registerSW() {
   if (!navigator.serviceWorker) {
@@ -15,13 +14,16 @@ async function registerSW() {
       location.protocol !== "https:" &&
       !["localhost", "127.0.0.1"].includes(location.hostname)
     )
-      throw new Error("Secure connection required for resources.");
+      throw new Error("Secure connection required.");
 
-    throw new Error("Legacy browser detected; please update for portal access.");
+    throw new Error("Browser update required for portal access.");
   }
 
-  // Registers the worker so the search bar actually "goes" somewhere
+  // This registers the 'brain' of the proxy using your config prefix
   await navigator.serviceWorker.register(stockSW, {
     scope: __uv$config.prefix,
   });
 }
+
+// CRITICAL FIX: This line actually turns the engine on when the page loads
+registerSW().catch(console.error);
