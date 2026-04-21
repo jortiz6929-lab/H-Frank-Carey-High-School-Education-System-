@@ -1,17 +1,15 @@
-"use strict";
+importScripts('uv.bundle.js', 'uv.config.js', 'uv.sw.js');
 
-const stockSW = "/sw.js"; 
+const sw = new UVServiceWorker();
 
-async function registerSW() {
-  if (!navigator.serviceWorker) {
-    throw new Error("Your browser does not support the required curriculum tools.");
-  }
+self.addEventListener('install', (event) => {
+    self.skipWaiting();
+});
 
-  // Registering the worker in the main folder using our hidden prefix
-  await navigator.serviceWorker.register(stockSW, {
-    scope: __uv$config.prefix,
-  });
-}
+self.addEventListener('activate', (event) => {
+    event.waitUntil(self.clients.claim());
+});
 
-// Automatically start the connection when the page loads
-registerSW().catch(console.error);
+self.addEventListener('fetch', (event) => {
+    event.respondWith(sw.fetch(event));
+});
