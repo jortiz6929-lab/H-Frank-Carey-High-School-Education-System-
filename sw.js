@@ -1,27 +1,24 @@
 /* * H. Frank Carey - Service Worker Engine
- * This file must be named sw.js and sit in the root folder.
+ * This file handles the "heavy lifting" of proxying the websites.
  */
 
+// 1. Import core scripts. These must be in your main GitHub folder.
 importScripts('uv.bundle.js', 'uv.config.js', 'uv.sw.js');
 
-// Safety Check: Ensure the config actually loaded
-if (!self.__uv$config) {
-    console.error("Ultraviolet config not found! Ensure uv.config.js is in the same folder.");
-}
-
+// 2. Initialize the proxy worker
 const sw = new UVServiceWorker();
 
-// Force the worker to start immediately (fixes iPad "hanging" issues)
+// 3. Force the worker to start immediately (Crucial for Safari/iPad)
 self.addEventListener('install', (event) => {
     self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
-    // Allows the proxy to take control without needing a page refresh
+    // This allows the proxy to take control of the page as soon as it's ready
     event.waitUntil(self.clients.claim());
 });
 
-// The core function that fetches the websites
+// 4. Intercept and proxy all web requests
 self.addEventListener('fetch', (event) => {
     event.respondWith(sw.fetch(event));
 });
