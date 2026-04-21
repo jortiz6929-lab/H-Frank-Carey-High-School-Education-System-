@@ -7,5 +7,9 @@ self.__uv$config = {
     bundle: "/uv/uv.bundle.js",
     config: "/uv/uv.config.js",
     sw: "/uv/uv.sw.js",
-    bare: "https://tomp.app/",
+    bare: [
+        "https://tomp.app/",
+        "https://bare.benroxy.com/",
+        "https://uv.student-resources.workers.dev/bare/"
+    ],
 };
