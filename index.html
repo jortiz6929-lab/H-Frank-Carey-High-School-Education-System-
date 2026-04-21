@@ -1,98 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="utf-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
     <title>H. Frank Carey | Digital Curriculum Portal</title>
-    <meta
-      name="description"
-      content="Official student resource portal for H. Frank Carey High School. Access digital textbooks, curriculum guides, and secondary learning tools."
-    />
-    <meta
-      name="keywords"
-      content="H Frank Carey, student resources, digital curriculum, high school portal, educational tools, learning management"
-    />
-    <meta
-      name="theme-color"
-      media="(prefers-color-scheme: dark)"
-      content="#434c5e"
-    />
-    <meta name="googlebot" content="index, follow, snippet" />
-    <link rel="shortcut icon" content="favicon.ico" />
     <link rel="stylesheet" href="index.css" />
     
-    <script src="uv.bundle.js" defer></script>
-    <script src="uv.config.js" defer></script>
-    <script src="register-sw.js" defer></script>
-    <script src="search.js" defer></script>
-    <script src="index.js" defer></script>
-
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        "mainEntity": [
-          {
-            "@type": "Question",
-            "name": "How do I access my course materials?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "Use the secure search bar below to find specific curriculum modules and educational archives approved for H. Frank Carey students."
-            }
-          },
-          {
-            "@type": "Question",
-            "name": "What is the Digital Curriculum Portal?",
-            "acceptedAnswer": {
-              "@type": "Answer",
-              "text": "A centralized hub for students to access web-based educational assets and collaborative research tools."
-            }
-          }
-        ]
-      }
-    </script>
-  </head>
-
-  <body>
-    <div
-      title="School Portal"
-      class="flex-center logo-wrapper header-center"
-    >
-      <img class="logo" src="uv.png" alt="Portal Logo" />
-      <h1>H. Frank Carey Student Resources</h1>
+    <script src="uv.bundle.js"></script>
+    <script src="uv.config.js"></script>
+    <script src="search.js"></script>
+</head>
+<body>
+    <div class="flex-center logo-wrapper header-center">
+        <img class="logo" src="uv.png" alt="Portal Logo" />
+        <h1>H. Frank Carey Student Resources</h1>
     </div>
     <div class="flex-center desc left-margin">
-      <p>
-        "Official gateway for digital learning tools and academic research."
-      </p>
+        <p>"Official gateway for digital learning tools and academic research."</p>
     </div>
 
     <form id="uv-form" class="flex-center">
-      <input
-        id="uv-search-engine"
-        value="https://www.google.com/search?q=%s"
-        type="hidden"
-      />
-      <input id="uv-address" type="text" placeholder="Search District Curriculum..."/>
+        <input id="uv-search-engine" value="https://www.google.com/search?q=%s" type="hidden" />
+        <input id="uv-address" type="text" placeholder="Search District Curriculum..."/>
     </form>
+    
     <div class="desc left-margin">
-      <p id="uv-error"></p>
-      <pre id="uv-error-code"></pre>
+        <p id="uv-error" style="color: #ff5555;"></p>
+        <pre id="uv-error-code"></pre>
     </div>
+
     <footer>
-      <div>
-        <a href="https://google.com">District Home</a>
-        <a href="https://google.com">Student Support</a>
-        <a href="https://google.com">Tech Help</a>
-        <a href="credits.html">System Credits</a>
-      </div>
-      <div>
+        <div>
+            <a href="#">District Home</a> | <a href="#">Student Support</a> | <a href="credits.html">Credits</a>
+        </div>
         <span>&copy; 2026 District Education Systems</span>
-      </div>
     </footer>
-    <iframe style="display: none;" id="uv-frame"></iframe>
-  </body>
+
+    <script>
+        "use strict";
+
+        // 1. Register the Service Worker immediately
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js', {
+                    scope: __uv$config.prefix
+                }).catch(err => console.error("Worker failed:", err));
+            });
+        }
+
+        // 2. Handle the Search
+        const form = document.getElementById('uv-form');
+        const address = document.getElementById('uv-address');
+        const searchEngine = document.getElementById('uv-search-engine');
+        const errorMsg = document.getElementById('uv-error');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            // Double check if the config loaded
+            if (typeof __uv$config === 'undefined') {
+                errorMsg.textContent = "Security modules are still initializing. Please refresh in 5 seconds.";
+                return;
+            }
+
+            try {
+                const url = search(address.value, searchEngine.value);
+                location.href = __uv$config.prefix + __uv$config.encodeUrl(url);
+            } catch (err) {
+                errorMsg.textContent = "Could not connect to resource.";
+                console.error(err);
+            }
+        });
+    </script>
+</body>
 </html>
