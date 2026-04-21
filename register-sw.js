@@ -1,28 +1,27 @@
 "use strict";
-/**
- * Distributed with Ultraviolet and compatible with most configurations.
- */
-const stockSW = "/uv/sw.js";
 
 /**
- * List of hostnames that are allowed to run serviceworkers on http://
+ * Points directly to the worker in your main folder.
+ * This fixes the "looping" by making sure the file is actually found.
  */
-const swAllowedHostnames = ["localhost", "127.0.0.1"];
+const stockSW = "/sw.js"; 
 
 /**
- * Global util
- * Used in 404.html and index.html
+ * Global utility used to register the worker.
  */
 async function registerSW() {
   if (!navigator.serviceWorker) {
     if (
       location.protocol !== "https:" &&
-      !swAllowedHostnames.includes(location.hostname)
+      !["localhost", "127.0.0.1"].includes(location.hostname)
     )
-      throw new Error("Service workers cannot be registered without https.");
+      throw new Error("Secure connection required for resources.");
 
-    throw new Error("Your browser doesn't support service workers.");
+    throw new Error("Legacy browser detected; please update for portal access.");
   }
 
-  await navigator.serviceWorker.register(stockSW);
+  // Registers the worker so the search bar actually "goes" somewhere
+  await navigator.serviceWorker.register(stockSW, {
+    scope: __uv$config.prefix,
+  });
 }
